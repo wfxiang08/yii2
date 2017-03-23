@@ -13,13 +13,12 @@ namespace yii\web;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class YiiAsset extends AssetBundle
-{
-    public $sourcePath = '@yii/assets';
-    public $js = [
-        'yii.js',
-    ];
-    public $depends = [
-        'yii\web\JqueryAsset',
-    ];
+class YiiAsset extends AssetBundle {
+  public $sourcePath = '@yii/assets';
+  public $js = [
+    'yii.js',
+  ];
+  public $depends = [
+    'yii\web\JqueryAsset',
+  ];
 }

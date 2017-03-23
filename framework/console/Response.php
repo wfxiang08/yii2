@@ -13,6 +13,5 @@ namespace yii\console;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Response extends \yii\base\Response
-{
+class Response extends \yii\base\Response {
 }

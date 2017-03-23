@@ -20,16 +20,14 @@ namespace yii\web;
  *
  * @since 2.0.11
  */
-class RangeNotSatisfiableHttpException extends HttpException
-{
-    /**
-     * Constructor.
-     * @param string $message error message
-     * @param int $code error code
-     * @param \Exception $previous The previous exception used for the exception chaining.
-     */
-    public function __construct($message = null, $code = 0, \Exception $previous = null)
-    {
-        parent::__construct(416, $message, $code, $previous);
-    }
+class RangeNotSatisfiableHttpException extends HttpException {
+  /**
+   * Constructor.
+   * @param string $message error message
+   * @param int $code error code
+   * @param \Exception $previous The previous exception used for the exception chaining.
+   */
+  public function __construct($message = null, $code = 0, \Exception $previous = null) {
+    parent::__construct(416, $message, $code, $previous);
+  }
 }
