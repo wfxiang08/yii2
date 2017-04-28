@@ -153,6 +153,7 @@ class Migration extends Component implements MigrationInterface {
    * and should not proceed further. All other return values mean the migration succeeds.
    */
   public function safeUp() {
+    // 需要重载
   }
 
   /**
@@ -165,7 +166,9 @@ class Migration extends Component implements MigrationInterface {
    * and should not proceed further. All other return values mean the migration succeeds.
    */
   public function safeDown() {
+    // 需要重载
   }
+
 
   /**
    * Executes a SQL statement.

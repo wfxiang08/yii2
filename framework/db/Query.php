@@ -204,6 +204,7 @@ class Query extends Component implements QueryInterface {
     if ($this->emulateExecution) {
       return [];
     }
+    // 执行Command的All函数
     $rows = $this->createCommand($db)->queryAll();
     return $this->populate($rows);
   }

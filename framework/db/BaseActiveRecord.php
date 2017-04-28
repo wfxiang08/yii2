@@ -263,14 +263,20 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface {
    * @see getAttribute()
    */
   public function __get($name) {
+    // 首先读取 attributes
     if (isset($this->_attributes[$name]) || array_key_exists($name, $this->_attributes)) {
       return $this->_attributes[$name];
+
     } elseif ($this->hasAttribute($name)) {
       return null;
     } else {
+
+      // related
       if (isset($this->_related[$name]) || array_key_exists($name, $this->_related)) {
         return $this->_related[$name];
       }
+
+      // 读取Parent
       $value = parent::__get($name);
       if ($value instanceof ActiveQueryInterface) {
         return $this->_related[$name] = $value->findFor($name, $this);
@@ -1076,14 +1082,22 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface {
    * @param array $row attribute values (name => value)
    */
   public static function populateRecord($record, $row) {
+    // 从数据到row
+    // 如果key不方便处理, 那么可以在row上做cache
     $columns = array_flip($record->attributes());
+
+    // $row格式: array
     foreach ($row as $name => $value) {
+      // columns数据转入: attributes
       if (isset($columns[$name])) {
         $record->_attributes[$name] = $value;
       } elseif ($record->canSetProperty($name)) {
+        // 其他情况的处理
         $record->$name = $value;
       }
     }
+
+    // 还有oldAttributes
     $record->_oldAttributes = $record->_attributes;
   }
 
@@ -1101,6 +1115,7 @@ abstract class BaseActiveRecord extends Model implements ActiveRecordInterface {
    * @return static the newly created active record
    */
   public static function instantiate($row) {
+    // 默认情况下, 直接创建一个新对象
     return new static;
   }
 

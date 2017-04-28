@@ -90,7 +90,9 @@ class Schema extends \yii\db\Schema {
     $table = new TableSchema;
     $this->resolveTableNames($table, $name);
 
+    // 首先读取字段信息
     if ($this->findColumns($table)) {
+      // 再次读取外键信息
       $this->findConstraints($table);
 
       return $table;
@@ -121,8 +123,10 @@ class Schema extends \yii\db\Schema {
    * @return ColumnSchema the column schema object
    */
   protected function loadColumnSchema($info) {
+    // 创建一个column
     $column = $this->createColumnSchema();
 
+    // 从info中获取column相关的信息
     $column->name = $info['field'];
     $column->allowNull = $info['null'] === 'YES';
     $column->isPrimaryKey = strpos($info['key'], 'PRI') !== false;
@@ -133,6 +137,7 @@ class Schema extends \yii\db\Schema {
     $column->unsigned = stripos($column->dbType, 'unsigned') !== false;
 
     $column->type = self::TYPE_STRING;
+
     if (preg_match('/^(\w+)(?:\(([^\)]+)\))?/', $column->dbType, $matches)) {
       $type = strtolower($matches[1]);
       if (isset($this->typeMap[$type])) {
@@ -187,6 +192,7 @@ class Schema extends \yii\db\Schema {
    */
   protected function findColumns($table) {
     $sql = 'SHOW FULL COLUMNS FROM ' . $this->quoteTableName($table->fullName);
+
     try {
       $columns = $this->db->createCommand($sql)->queryAll();
     } catch (\Exception $e) {
@@ -198,12 +204,17 @@ class Schema extends \yii\db\Schema {
       }
       throw $e;
     }
+
     foreach ($columns as $info) {
       if ($this->db->slavePdo->getAttribute(\PDO::ATTR_CASE) !== \PDO::CASE_LOWER) {
         $info = array_change_key_case($info, CASE_LOWER);
       }
+
       $column = $this->loadColumnSchema($info);
+
       $table->columns[$column->name] = $column;
+
+      // 是否为主键的一部分
       if ($column->isPrimaryKey) {
         $table->primaryKey[] = $column->name;
         if ($column->autoIncrement) {
@@ -238,6 +249,7 @@ class Schema extends \yii\db\Schema {
    * @throws \Exception
    */
   protected function findConstraints($table) {
+    // 在很多系统中, 外键约束不是一个强约束, 可以忽略
     $sql = <<<SQL
 SELECT
     kcu.constraint_name,

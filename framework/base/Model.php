@@ -261,6 +261,7 @@ class Model extends Component implements IteratorAggregate, ArrayAccess, Arrayab
     {
         $class = new ReflectionClass($this);
         $names = [];
+        // ActiveRecord的属性?
         foreach ($class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             if (!$property->isStatic()) {
                 $names[] = $property->getName();

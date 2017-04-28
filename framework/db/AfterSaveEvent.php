@@ -15,10 +15,9 @@ use yii\base\Event;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-class AfterSaveEvent extends Event
-{
-    /**
-     * @var array The attribute values that had changed and were saved.
-     */
-    public $changedAttributes;
+class AfterSaveEvent extends Event {
+  /**
+   * @var array The attribute values that had changed and were saved.
+   */
+  public $changedAttributes;
 }

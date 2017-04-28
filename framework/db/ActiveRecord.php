@@ -1,9 +1,4 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
 
 namespace yii\db;
 
@@ -294,6 +289,7 @@ class ActiveRecord extends BaseActiveRecord {
    * @return ActiveQuery the newly created [[ActiveQuery]] instance.
    */
   public static function find() {
+    // 构建一个Query, 并且将ActiveRecord的实现作为参数
     return Yii::createObject(ActiveQuery::className(), [get_called_class()]);
   }
 
@@ -315,6 +311,8 @@ class ActiveRecord extends BaseActiveRecord {
    * @throws InvalidConfigException if the table for the AR class does not exist.
    */
   public static function getTableSchema() {
+    // 读取一次DB
+    // 这个如何Cache呢?
     $tableSchema = static::getDb()
       ->getSchema()
       ->getTableSchema(static::tableName());
@@ -340,6 +338,7 @@ class ActiveRecord extends BaseActiveRecord {
    * @return string[] the primary keys of the associated database table.
    */
   public static function primaryKey() {
+    // 返回的为数组
     return static::getTableSchema()->primaryKey;
   }
 
@@ -349,6 +348,7 @@ class ActiveRecord extends BaseActiveRecord {
    * @return array list of attribute names.
    */
   public function attributes() {
+    // ActiveRecord 真正和DB关联
     return array_keys(static::getTableSchema()->columns);
   }
 

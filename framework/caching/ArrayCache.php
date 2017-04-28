@@ -22,67 +22,60 @@ namespace yii\caching;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-class ArrayCache extends Cache
-{
-    private $_cache;
+class ArrayCache extends Cache {
+  private $_cache;
 
 
-    /**
-     * @inheritdoc
-     */
-    public function exists($key)
-    {
-        $key = $this->buildKey($key);
-        return isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true));
+  /**
+   * @inheritdoc
+   */
+  public function exists($key) {
+    $key = $this->buildKey($key);
+    return isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true));
+  }
+
+  /**
+   * @inheritdoc
+   */
+  protected function getValue($key) {
+    if (isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true))) {
+      return $this->_cache[$key][0];
     }
+    return false;
+  }
 
-    /**
-     * @inheritdoc
-     */
-    protected function getValue($key)
-    {
-        if (isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true))) {
-            return $this->_cache[$key][0];
-        }
-        return false;
-    }
+  /**
+   * @inheritdoc
+   */
+  protected function setValue($key, $value, $duration) {
+    $this->_cache[$key] = [$value, $duration === 0 ? 0 : microtime(true) + $duration];
+    return true;
+  }
 
-    /**
-     * @inheritdoc
-     */
-    protected function setValue($key, $value, $duration)
-    {
-        $this->_cache[$key] = [$value, $duration === 0 ? 0 : microtime(true) + $duration];
-        return true;
+  /**
+   * @inheritdoc
+   */
+  protected function addValue($key, $value, $duration) {
+    if (isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true))) {
+      return false;
     }
+    $this->_cache[$key] = [$value, $duration === 0 ? 0 : microtime(true) + $duration];
+    return true;
+  }
 
-    /**
-     * @inheritdoc
-     */
-    protected function addValue($key, $value, $duration)
-    {
-        if (isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true))) {
-            return false;
-        }
-        $this->_cache[$key] = [$value, $duration === 0 ? 0 : microtime(true) + $duration];
-        return true;
-    }
+  /**
+   * @inheritdoc
+   */
+  protected function deleteValue($key) {
+    unset($this->_cache[$key]);
+    return true;
+  }
 
-    /**
-     * @inheritdoc
-     */
-    protected function deleteValue($key)
-    {
-        unset($this->_cache[$key]);
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function flushValues()
-    {
-        $this->_cache = [];
-        return true;
-    }
+  /**
+   * @inheritdoc
+   */
+  protected function flushValues() {
+    $this->_cache = [];
+    return true;
+  }
 }

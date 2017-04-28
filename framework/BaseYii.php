@@ -334,6 +334,7 @@ class BaseYii {
     } elseif (is_array($type) && isset($type['class'])) {
       $class = $type['class'];
       unset($type['class']);
+      // 如何创建一个对象呢?
       return static::$container->get($class, $params, $type);
     } elseif (is_callable($type, true)) {
       return static::$container->invoke($type, $params);
