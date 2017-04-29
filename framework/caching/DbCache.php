@@ -14,6 +14,7 @@ use yii\db\Query;
 use yii\di\Instance;
 
 /**
+ * 不建议使用
  * DbCache implements a cache application component by storing cached data in a database.
  *
  * By default, DbCache stores session data in a DB table named 'cache'. This table

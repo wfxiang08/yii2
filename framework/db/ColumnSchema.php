@@ -87,6 +87,7 @@ class ColumnSchema extends Object {
    * @return mixed converted value
    */
   public function phpTypecast($value) {
+    // 将数据库中的数据转换成为php类型
     return $this->typecast($value);
   }
 
@@ -111,12 +112,21 @@ class ColumnSchema extends Object {
    * @since 2.0.3
    */
   protected function typecast($value) {
-    if ($value === '' && $this->type !== Schema::TYPE_TEXT && $this->type !== Schema::TYPE_STRING && $this->type !== Schema::TYPE_BINARY && $this->type !== Schema::TYPE_CHAR) {
+    // 数据库 --> php 类型
+
+    // 空字符串如何理解呢?
+    if ($value === '' && $this->type !== Schema::TYPE_TEXT
+                      && $this->type !== Schema::TYPE_STRING
+                      && $this->type !== Schema::TYPE_BINARY
+                      && $this->type !== Schema::TYPE_CHAR) {
       return null;
     }
+
+    // 如果类型ok, 则直接返回
     if ($value === null || gettype($value) === $this->phpType || $value instanceof Expression || $value instanceof Query) {
       return $value;
     }
+
     switch ($this->phpType) {
       case 'resource':
       case 'string':

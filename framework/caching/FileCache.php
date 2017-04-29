@@ -11,6 +11,7 @@ use Yii;
 use yii\helpers\FileHelper;
 
 /**
+ * 不建议使用
  * FileCache implements a cache component using files.
  *
  * For each data value being cached, FileCache will store it in a separate file.

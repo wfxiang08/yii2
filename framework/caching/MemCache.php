@@ -70,7 +70,7 @@ class MemCache extends Cache {
    * If false, [memcache](http://pecl.php.net/package/memcache) will be used.
    * Defaults to false.
    */
-  public $useMemcached = false;
+  public $useMemcached = false; // 一般情况下为true
   /**
    * @var string an ID that identifies a Memcached instance. This property is used only when [[useMemcached]] is true.
    * By default the Memcached instances are destroyed at the end of the request. To create an instance that
@@ -129,13 +129,16 @@ class MemCache extends Cache {
         'port' => 11211,
       ])];
     } else {
+      // 验证参数OK
       foreach ($servers as $server) {
         if ($server->host === null) {
           throw new InvalidConfigException("The 'host' property must be specified for every memcache server.");
         }
       }
     }
+
     if ($this->useMemcached) {
+      // 添加Memcached Servers
       $this->addMemcachedServers($cache, $servers);
     } else {
       $this->addMemcacheServers($cache, $servers);
@@ -151,6 +154,8 @@ class MemCache extends Cache {
    */
   protected function addMemcachedServers($cache, $servers) {
     $existingServers = [];
+
+    // 暂不考虑persistentId
     if ($this->persistentId !== null) {
       foreach ($cache->getServerList() as $s) {
         $existingServers[$s['host'] . ':' . $s['port']] = true;
@@ -160,6 +165,9 @@ class MemCache extends Cache {
     // 不重复添加host/port
     foreach ($servers as $server) {
       if (empty($existingServers) || !isset($existingServers[$server->host . ':' . $server->port])) {
+        // 添加Server
+        // weight
+        // 虽然有很多memcached的proxy/client, 但是和php本身的实现方式不一致
         $cache->addServer($server->host, $server->port, $server->weight);
       }
     }
@@ -221,13 +229,18 @@ class MemCache extends Cache {
 
       if ($this->useMemcached) {
         $this->_cache = $this->persistentId !== null ? new \Memcached($this->persistentId) : new \Memcached;
+
+        // 使用BinaryProtocol
+        // 如果没有用户名或密码, 则使用文本模式
         if ($this->username !== null || $this->password !== null) {
           $this->_cache->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
           $this->_cache->setSaslAuthData($this->username, $this->password);
         }
+
         if (!empty($this->options)) {
           $this->_cache->setOptions($this->options);
         }
+
       } else {
         $this->_cache = new \Memcache;
       }

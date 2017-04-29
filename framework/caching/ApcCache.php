@@ -10,6 +10,7 @@ namespace yii\caching;
 use yii\base\InvalidConfigException;
 
 /**
+ * 废弃
  * ApcCache provides APC caching in terms of an application component.
  *
  * To use this application component, the [APC PHP extension](http://www.php.net/apc) must be loaded.

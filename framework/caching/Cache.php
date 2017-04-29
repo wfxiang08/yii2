@@ -90,6 +90,7 @@ abstract class Cache extends Component implements \ArrayAccess {
    * @return string the generated cache key
    */
   public function buildKey($key) {
+    // string和其他对象如何序列化呢?
     if (is_string($key)) {
       $key = ctype_alnum($key) && StringHelper::byteLength($key) <= 32 ? $key : md5($key);
     } else {
@@ -108,14 +109,24 @@ abstract class Cache extends Component implements \ArrayAccess {
    */
   public function get($key) {
     $key = $this->buildKey($key);
+
     $value = $this->getValue($key);
+
+    // 数据的反序列化
     if ($value === false || $this->serializer === false) {
+      // 如果没有数据,或者不序列化, 则直接返回
       return $value;
+
     } elseif ($this->serializer === null) {
+      // 数据的反序列化
       $value = unserialize($value);
+
     } else {
+      // 通过指定的serializer来反序列化
       $value = call_user_func($this->serializer[1], $value);
     }
+
+    // dependency 有点点牛B
     if (is_array($value) && !($value[1] instanceof Dependency && $value[1]->isChanged($this))) {
       return $value[0];
     } else {
@@ -174,7 +185,11 @@ abstract class Cache extends Component implements \ArrayAccess {
     foreach ($keys as $key) {
       $keyMap[$key] = $this->buildKey($key);
     }
+
+    // 读取多个元素
     $values = $this->getValues(array_values($keyMap));
+
+    // 逐个元素反序列化
     $results = [];
     foreach ($keyMap as $key => $newKey) {
       $results[$key] = false;
@@ -431,6 +446,7 @@ abstract class Cache extends Component implements \ArrayAccess {
    * @return array a list of cached values indexed by the keys
    */
   protected function getValues($keys) {
+    // 这个比较抓狂?
     $results = [];
     foreach ($keys as $key) {
       $results[$key] = $this->getValue($key);

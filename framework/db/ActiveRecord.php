@@ -71,6 +71,7 @@ use yii\helpers\StringHelper;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
+// ActiveRecord
 class ActiveRecord extends BaseActiveRecord {
   /**
    * The insert operation. This is mainly used when overriding [[transactions()]] to specify which operations are transactional.
@@ -387,13 +388,30 @@ class ActiveRecord extends BaseActiveRecord {
    * @inheritdoc
    */
   public static function populateRecord($record, $row) {
+    // TODO: 优化这部分的数据读写
     $columns = static::getTableSchema()->columns;
+    // 通过columns来实现对row的转换
+    // 如何压缩$row的缓存数据呢?
+    //
+    // $columns --> sort --> signature: signature:id --> cache_key
+    // 序列化:
+    //    msgpack: (columnV0, v1, v2, null, v3, ....) ---> data
+    // 反序列化:
+    //    msg_unpack --> array
+    //               --> sorted_columns --> $row --> Record
     foreach ($row as $name => $value) {
       if (isset($columns[$name])) {
         $row[$name] = $columns[$name]->phpTypecast($value);
       }
     }
+
+    // 然后再将Record重构
     parent::populateRecord($record, $row);
+
+    // 保存成功, 则更新oldAttributes,
+
+    // 在afterSave中对oldAttributes进行cache
+    // 不保存related的信息, 不保存 attributes中的信息
   }
 
   /**
@@ -484,8 +502,12 @@ class ActiveRecord extends BaseActiveRecord {
       $values[$name] = $id;
     }
 
+    // 保存成功, 则更新oldAttributes,
     $changedAttributes = array_fill_keys(array_keys($values), null);
     $this->setOldAttributes($values);
+
+    // 在afterSave中对oldAttributes进行cache
+    // 不保存related的信息, 不保存 attributes中的信息
     $this->afterSave(true, $changedAttributes);
 
     return true;

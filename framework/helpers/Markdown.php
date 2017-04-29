@@ -25,6 +25,5 @@ namespace yii\helpers;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-class Markdown extends BaseMarkdown
-{
+class Markdown extends BaseMarkdown {
 }
