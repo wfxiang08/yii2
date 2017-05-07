@@ -606,6 +606,8 @@ abstract class Application extends Module {
    * @see set()
    */
   public function coreComponents() {
+    // 1. 在app config中可以不指定class, 但是这个不符合yii container的component创建的模式
+    // 2. coreComponents 指定了默认的class
     return [
       'log' => ['class' => 'yii\log\Dispatcher'],
       'view' => ['class' => 'yii\web\View'],

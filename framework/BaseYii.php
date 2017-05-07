@@ -125,6 +125,7 @@ class BaseYii {
    * @see setAlias()
    */
   public static function getAlias($alias, $throwException = true) {
+    // @runtime/logs/apns.log
     if (strncmp($alias, '@', 1)) {
       // not an alias
       return $alias;
@@ -133,6 +134,7 @@ class BaseYii {
     $pos = strpos($alias, '/');
     $root = $pos === false ? $alias : substr($alias, 0, $pos);
 
+    // 从aliases中读取实际的@runtime 之类的别名
     if (isset(static::$aliases[$root])) {
       if (is_string(static::$aliases[$root])) {
         return $pos === false ? static::$aliases[$root] : static::$aliases[$root] . substr($alias, $pos);
@@ -485,10 +487,13 @@ class BaseYii {
    * @return string the translated message.
    */
   public static function t($category, $message, $params = [], $language = null) {
+
+    // 如何处理i18n呢?
     if (static::$app !== null) {
       return static::$app->getI18n()->translate($category, $message, $params, $language ?: static::$app->language);
     }
 
+    // 默认直接通过变量替换来实现interpolation
     $placeholders = [];
     foreach ((array)$params as $name => $value) {
       $placeholders['{' . $name . '}'] = $value;

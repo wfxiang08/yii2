@@ -4,7 +4,6 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\i18n;
 
 use Yii;
@@ -94,7 +93,11 @@ class DbMessageSource extends MessageSource {
    */
   public function init() {
     parent::init();
+
+    // 所有的Connection都是从container中获取
     $this->db = Instance::ensure($this->db, Connection::className());
+
+    // 指定Cache
     if ($this->enableCaching) {
       $this->cache = Instance::ensure($this->cache, Cache::className());
     }
@@ -139,6 +142,9 @@ class DbMessageSource extends MessageSource {
    * @return array the messages loaded from database.
    */
   protected function loadMessagesFromDb($category, $language) {
+    // 如何从DB获取所需要的数据呢?
+    // 两个表的JOIN:
+    //
     $mainQuery = (new Query())->select(['message' => 't1.message', 'translation' => 't2.translation'])
       ->from(['t1' => $this->sourceMessageTable, 't2' => $this->messageTable])
       ->where([

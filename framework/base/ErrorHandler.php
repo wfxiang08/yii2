@@ -281,6 +281,8 @@ abstract class ErrorHandler extends Component {
    */
   public function logException($exception) {
     $category = get_class($exception);
+
+    // 指定Category
     if ($exception instanceof HttpException) {
       $category = 'yii\\web\\HttpException:' . $exception->statusCode;
     } elseif ($exception instanceof \ErrorException) {

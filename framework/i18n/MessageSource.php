@@ -35,7 +35,7 @@ class MessageSource extends Component {
    * @var string the language that the original messages are in. If not set, it will use the value of
    * [[\yii\base\Application::sourceLanguage]].
    */
-  public $sourceLanguage;
+  public $sourceLanguage;  // 原始的Message的language, 默认为: en-US
 
   private $_messages = [];
 
@@ -45,6 +45,7 @@ class MessageSource extends Component {
    */
   public function init() {
     parent::init();
+
     if ($this->sourceLanguage === null) {
       $this->sourceLanguage = Yii::$app->sourceLanguage;
     }
@@ -79,6 +80,8 @@ class MessageSource extends Component {
    * @return string|bool the translated message or false if translation wasn't found or isn't required
    */
   public function translate($category, $message, $language) {
+    // 强制翻译
+    // 或者消息的原始语言和当前语言不一致, 则要求翻译
     if ($this->forceTranslation || $language !== $this->sourceLanguage) {
       return $this->translateMessage($category, $message, $language);
     } else {
@@ -98,23 +101,32 @@ class MessageSource extends Component {
    */
   protected function translateMessage($category, $message, $language) {
     $key = $language . '/' . $category;
+
+    // 加载消息
     if (!isset($this->_messages[$key])) {
       $this->_messages[$key] = $this->loadMessages($category, $language);
     }
+
     if (isset($this->_messages[$key][$message]) && $this->_messages[$key][$message] !== '') {
+
+      // 如果存在消息,则直接翻译
       return $this->_messages[$key][$message];
     } elseif ($this->hasEventHandlers(self::EVENT_MISSING_TRANSLATION)) {
+
+      // 通过EventHandlers来处理
       $event = new MissingTranslationEvent([
         'category' => $category,
         'message' => $message,
         'language' => $language,
       ]);
       $this->trigger(self::EVENT_MISSING_TRANSLATION, $event);
+
       if ($event->translatedMessage !== null) {
         return $this->_messages[$key][$message] = $event->translatedMessage;
       }
     }
 
+    // 返回false
     return $this->_messages[$key][$message] = false;
   }
 }

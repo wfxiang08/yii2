@@ -550,6 +550,10 @@ abstract class Schema extends Object {
    * @return string the real name of the given table name
    */
   public function getRawTableName($name) {
+    // 如何获取真实的Tablename呢?
+    // {{%hello}}
+    // 1. 如果没有{{, 则表示普通的name
+    // 2. 如果有{{, 则将{{}}替换掉, 接着将其中的%替换为prefix
     if (strpos($name, '{{') !== false) {
       $name = preg_replace('/\\{\\{(.*?)\\}\\}/', '\1', $name);
 
