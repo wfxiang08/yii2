@@ -13,11 +13,10 @@ namespace yii\web;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-interface ResponseFormatterInterface
-{
-    /**
-     * Formats the specified response.
-     * @param Response $response the response to be formatted.
-     */
-    public function format($response);
+interface ResponseFormatterInterface {
+  /**
+   * Formats the specified response.
+   * @param Response $response the response to be formatted.
+   */
+  public function format($response);
 }
